@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine Ask 💌</title>
+  <style>
+    :root{--bg:#FFF0F6;--card:#fff;--accent:#ff4f86;--muted:#7a4b5f;--ink:#2b1b22;--soft:#ffe6f0;--sad:#5a4b5f;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:radial-gradient(circle at 12% 10%,#fff6fb,var(--bg));min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:820px;background:var(--card);border-radius:22px;box-shadow:0 16px 44px rgba(150,50,100,.14);position:relative;overflow:hidden;padding:22px 22px 18px}
+    .header{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding-bottom:10px}
+    h1{margin:0;font-size:30px;color:#5a2030;letter-spacing:-.2px}
+    .lead{margin:0;color:var(--muted);line-height:1.35;max-width:600px}
+
+    .toolbar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0 2px}
+    .tb{
+      border:1px solid rgba(255,79,134,.22);background:#fff;border-radius:999px;
+      padding:8px 12px;font-weight:900;color:#6a1b3a;cursor:pointer;
+      box-shadow:0 10px 22px rgba(150,50,100,.08);user-select:none
+    }
+    .tb:active{transform:translateY(1px)}
+    .tb.small{font-size:13px;padding:7px 10px}
+    .tb.on{background:linear-gradient(135deg,#ff7aa2,#ff4f86);border-color:transparent;color:#fff}
+    .vol{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,240,246,.7);border:1px solid rgba(255,79,134,.14)}
+    input[type="range"]{width:140px}
+    .musicNote{color:#7a4b5f;font-size:12px;line-height:1.3;text-align:center;max-width:700px}
+
+    .main{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:12px}
+    @media (max-width:900px){.main{grid-template-columns:1fr}}
+
+    .scene{border-radius:18px;background:linear-gradient(180deg,#fff7fb,#fff);border:1px solid rgba(255,79,134,.15);padding:14px;position:relative;overflow:hidden;min-height:360px}
+    .sceneGlow{position:absolute;inset:-60px;background:
+      radial-gradient(circle at 30% 30%,rgba(255,79,134,.14),transparent 60%),
+      radial-gradient(circle at 80% 20%,rgba(255,79,134,.10),transparent 55%),
+      radial-gradient(circle at 60% 90%,rgba(56,189,248,.10),transparent 60%);
+      pointer-events:none
+    }
+    .messageBox{
+      position:relative;z-index:2;border-radius:16px;background:rgba(255,255,255,.92);
+      border:1px solid rgba(255,79,134,.16);box-shadow:0 10px 24px rgba(150,50,100,.08);
+      padding:12px 12px 10px;min-height:88px;display:flex;align-items:center;justify-content:center;
+      text-align:center;font-weight:950;color:#7b2f4b;line-height:1.25
+    }
+    .messageBox.softer{color:#6b2b41;font-weight:900}
+
+    .buttonStage{position:relative;z-index:2;margin-top:14px;height:200px;border-radius:16px;border:1px dashed rgba(255,79,134,.22);background:rgba(255,255,255,.70);overflow:hidden}
+    button.action{
+      border:0;padding:12px 18px;border-radius:14px;font-weight:950;font-size:16px;cursor:pointer;
+      user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+      box-shadow:0 10px 22px rgba(150,50,100,.10);position:absolute;white-space:nowrap
+    }
+    .yes{background:linear-gradient(135deg,#ff7aa2,#ff4f86);color:#fff;left:50%;top:74%;transform:translate(-50%,-50%);z-index:2}
+    .no{background:#fff;border:2px solid rgba(255,79,134,.50);color:var(--accent);z-index:3}
+    .no.disabled{border-color:#cbb3bf;color:var(--sad);cursor:default;box-shadow:none}
+    .counter{position:absolute;right:14px;bottom:14px;background:var(--soft);color:#6a1b3a;font-weight:950;font-size:13px;padding:8px 12px;border-radius:999px;box-shadow:0 10px 20px rgba(255,79,134,.10);user-select:none;z-index:5}
+
+    .animalCard{border-radius:18px;border:1px solid rgba(255,79,134,.15);background:#fff;box-shadow:0 10px 24px rgba(150,50,100,.07);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:360px;justify-content:center;position:relative;overflow:hidden}
+    .animalTitle{font-weight:950;color:#6a1b3a;background:var(--soft);padding:8px 12px;border-radius:999px;font-size:13px;z-index:2}
+    .animalWrap{width:100%;display:flex;align-items:center;justify-content:center;z-index:2}
+
+    /* Meme-style caption overlay for the animal image */
+    .animalMedia{
+      position:relative;
+      width:min(380px,92%);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 18px 24px rgba(150,50,100,.14);
+      background:#fff;
+    }
+    .animalMedia img{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:0;
+      background:#fff;
+    }
+    .memeTop, .memeBottom{
+      position:absolute;
+      left:10px; right:10px;
+      text-align:center;
+      font-weight:1000;
+      letter-spacing:.6px;
+      text-transform:uppercase;
+      color:#fff;
+      text-shadow:
+        0 2px 0 rgba(0,0,0,.55),
+        0 6px 14px rgba(0,0,0,.35);
+      line-height:1.05;
+      user-select:none;
+      pointer-events:none;
+    }
+    .memeTop{ top:10px; font-size:22px; }
+    .memeBottom{ bottom:10px; font-size:20px; }
+    @media (max-width:520px){
+      .memeTop{ font-size:18px; }
+      .memeBottom{ font-size:16px; }
+    }
+
+    /* “No image” reaction card */
+    .noImageCard{
+      width:min(380px,92%);
+      border-radius:18px;
+      background:rgba(255,240,246,.65);
+      border:1px dashed rgba(255,79,134,.35);
+      box-shadow:0 18px 24px rgba(150,50,100,.10);
+      padding:16px 14px;
+      text-align:center;
+      color:#6a1b3a;
+      font-weight:950;
+      line-height:1.35;
+    }
+    .noImageCard .big{
+      font-size:26px;
+      letter-spacing:-.3px;
+      margin-bottom:6px;
+    }
+    .noImageCard .sub{
+      font-weight:900;
+      color:#7a4b5f;
+      font-size:13px;
+    }
+
+    .animalHint{margin:0;text-align:center;color:var(--muted);font-size:13px;line-height:1.35;max-width:360px;z-index:2}
+    .animalBG{position:absolute;inset:-40px;background:
+      radial-gradient(circle at 30% 25%,rgba(255,79,134,.10),transparent 60%),
+      radial-gradient(circle at 75% 20%,rgba(56,189,248,.10),transparent 60%),
+      radial-gradient(circle at 50% 85%,rgba(255,79,134,.07),transparent 60%);
+      pointer-events:none
+    }
+
+    .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.92);z-index:50;padding:18px}
+    .overlay.show{display:flex}
+    .panel{width:min(640px,100%);border-radius:20px;background:#fff;border:1px solid rgba(255,79,134,.18);box-shadow:0 18px 50px rgba(150,50,100,.18);padding:16px;text-align:center}
+    .panel .tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--soft);color:#6a1b3a;font-weight:950;font-size:13px}
+    .panel h2{margin:10px 0 6px;color:#5a2030;font-size:22px;letter-spacing:-.2px}
+    .panel p{margin:0;color:#7a4b5f;font-size:13px;line-height:1.5;white-space:pre-line}
+    .panel .btnRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+    .panel .btnRow button{position:static;transform:none;box-shadow:none;padding:10px 14px;border-radius:12px;font-weight:950;border:0;cursor:pointer}
+    .panel .primary{background:linear-gradient(135deg,#ff7aa2,#ff4f86);color:#fff}
+    .panel .secondary{background:#fff;border:2px solid rgba(255,79,134,.45);color:#ff4f86}
+    .panel .soft{background:#fff6fb;border:1px solid rgba(255,79,134,.16);color:#6a1b3a}
+
+    .tearWrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px}
+    .tear{width:16px;height:22px;background:linear-gradient(180deg,#7dd3fc,#38bdf8);border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;transform:rotate(10deg);box-shadow:0 10px 24px rgba(56,189,248,.25);animation:tearDrop 900ms ease-in-out infinite alternate}
+    @keyframes tearDrop{from{transform:translateY(0) rotate(10deg);opacity:.9}to{transform:translateY(5px) rotate(14deg);opacity:1}}
+
+    .heart{position:absolute;width:18px;height:18px;transform:rotate(-45deg);background:var(--accent);border-radius:4px;pointer-events:none;animation:floatUp 900ms ease-out forwards;opacity:.95;filter:drop-shadow(0 8px 14px rgba(255,79,134,.22));z-index:60}
+    .heart:before,.heart:after{content:"";position:absolute;width:18px;height:18px;background:var(--accent);border-radius:50%;top:-9px;left:0}
+    .heart:after{left:9px;top:0;transform:translateX(-9px)}
+    @keyframes floatUp{0%{transform:translateY(0) scale(.9) rotate(-45deg);opacity:1}100%{transform:translateY(-120px) scale(1.2) rotate(-35deg);opacity:0}}
+
+    #ytHost{position:absolute;left:-9999px;top:-9999px;width:360px;height:240px;overflow:hidden}
+
+    .musicCurtain{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background:rgba(255,240,246,.88);backdrop-filter:blur(6px);z-index:9999;padding:18px
+    }
+    .musicCurtain.show{display:flex}
+    .musicCurtain .box{
+      width:min(520px,100%);background:#fff;border:1px solid rgba(255,79,134,.18);
+      box-shadow:0 18px 50px rgba(150,50,100,.18);border-radius:20px;padding:16px;text-align:center
+    }
+    .musicCurtain .title{font-weight:950;color:#5a2030;font-size:18px;margin:0 0 6px}
+    .musicCurtain .desc{margin:0;color:#7a4b5f;font-size:13px;line-height:1.45}
+    .musicCurtain .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+    .musicCurtain button{
+      border:0;border-radius:12px;padding:10px 14px;font-weight:950;cursor:pointer
+    }
+    .musicCurtain .start{background:linear-gradient(135deg,#ff7aa2,#ff4f86);color:#fff}
+    .musicCurtain .later{background:#fff6fb;border:1px solid rgba(255,79,134,.16);color:#6a1b3a}
+
+    /* INTRO OVERLAY */
+    .intro{
+      position:fixed;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      padding:18px;
+      background:rgba(255,240,246,.90);
+      backdrop-filter:blur(6px);
+      z-index:9000;
+      transition:opacity 400ms ease;
+    }
+    .intro.hidden{opacity:0;pointer-events:none;}
+    .introBox{
+      width:min(760px,100%);
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(255,79,134,.18);
+      box-shadow:0 18px 60px rgba(150,50,100,.20);
+      border-radius:22px;
+      padding:18px 16px 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .introGlow{
+      position:absolute;inset:-80px;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,79,134,.14), transparent 55%),
+        radial-gradient(circle at 80% 25%, rgba(56,189,248,.12), transparent 55%),
+        radial-gradient(circle at 55% 90%, rgba(255,79,134,.10), transparent 60%);
+      pointer-events:none;
+    }
+    .introHeader{
+      position:relative;z-index:2;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:8px;
+    }
+    .introTag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border-radius:999px;
+      background:var(--soft);color:#6a1b3a;
+      font-weight:950;font-size:13px;
+    }
+    .introSkip{
+      border:1px solid rgba(255,79,134,.22);
+      background:#fff;border-radius:999px;
+      padding:8px 12px;font-weight:950;
+      color:#6a1b3a;cursor:pointer;user-select:none
+    }
+    .introSkip:active{transform:translateY(1px)}
+    .introText{
+      position:relative;z-index:2;
+      font-weight:900;color:#6b2b41;
+      line-height:1.55;font-size:15px;
+      white-space:pre-line;
+      min-height:220px;
+      padding:10px 8px 6px;
+    }
+    .caret{
+      display:inline-block;width:10px;margin-left:2px;
+      color:#ff4f86;
+      animation:blink 900ms steps(1,end) infinite;
+    }
+    @keyframes blink{50%{opacity:0}}
+    .introFooter{
+      position:relative;z-index:2;
+      display:flex;justify-content:center;
+      margin-top:10px;
+      color:#7a4b5f;font-size:12px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Intro overlay -->
+  <div class="intro" id="intro">
+    <div class="introBox">
+      <div class="introGlow"></div>
+      <div class="introHeader">
+        <div class="introTag">A small note 🤍</div>
+        <button class="introSkip" id="introSkipBtn" type="button">Skip</button>
+      </div>
+      <div class="introText" id="introText"></div>
+      <div class="introFooter" id="introFooter">Music plays while this loads — you can skip anytime.</div>
+    </div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="header">
+      <h1>Will you be my Valentine? 💌</h1>
+      <p class="lead">One cute date. One good playlist.</p>
+
+      <div class="toolbar">
+        <button class="tb" id="playPauseBtn" type="button">⏳ Loading…</button>
+        <button class="tb small" id="muteBtn" type="button">🔊 Sound</button>
+        <div class="vol">
+          <span style="font-weight:900;color:#6a1b3a;font-size:13px;">Volume</span>
+          <input id="volSlider" type="range" min="0" max="100" value="30" />
+        </div>
+      </div>
+      <div class="musicNote" id="musicNote"></div>
+    </div>
+
+    <div class="main">
+      <div class="scene">
+        <div class="sceneGlow"></div>
+
+        <div class="messageBox" id="messageBox">Click a button 🙃</div>
+
+        <div class="buttonStage" id="stage">
+          <button class="action yes" id="yesBtn" type="button">Yes 💖</button>
+          <button class="action no" id="noBtn" type="button">No 😅</button>
+          <div class="counter" id="counter">No clicks: 0</div>
+        </div>
+      </div>
+
+      <div class="animalCard">
+        <div class="animalBG"></div>
+        <div class="animalTitle" id="animalTitle">Mood Buddy</div>
+        <div class="animalWrap" id="animalWrap"></div>
+        <p class="animalHint" id="animalHint">Every “No” comes with a silly animal reaction 🐾</p>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="panel">
+        <div class="tag" id="panelTag">Reservation Status</div>
+        <h2 id="panelTitle">Pending… ⏳</h2>
+        <p id="panelText">I’ll send you the plan soon.</p>
+        <div class="btnRow" id="panelBtns">
+          <button class="soft" id="closeOverlayBtn" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ytHost"><div id="ytPlayer"></div></div>
+  </div>
+
+  <!-- Autoplay fallback curtain (shows only if autoplay is blocked) -->
+  <div class="musicCurtain" id="musicCurtain">
+    <div class="box">
+      <p class="title">One tiny thing 💞</p>
+      <p class="desc">
+        Your browser blocked autoplay (it’s a common rule). Tap “Start music” once and it’ll play normally.
+      </p>
+      <div class="row">
+        <button class="start" id="musicStartBtn" type="button">Start music ▶</button>
+        <button class="later" id="musicLaterBtn" type="button">Not now</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // =======================
+  // Email + click behavior
+  // =======================
+  const YOUR_EMAIL = "YOUR_EMAIL_HERE";
+  const YES_PIXEL_URL = "";
+  const FINAL_NO_PIXEL_URL = "";
+  const LAST_CHANCE_AT = 25;
+
+  const card = document.getElementById('card');
+  const stage = document.getElementById('stage');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const counter = document.getElementById('counter');
+  const messageBox = document.getElementById('messageBox');
+
+  const animalWrap = document.getElementById('animalWrap');
+  const animalTitle = document.getElementById('animalTitle');
+  const animalHint = document.getElementById('animalHint');
+
+  const overlay = document.getElementById('overlay');
+  const panelTag = document.getElementById('panelTag');
+  const panelTitle = document.getElementById('panelTitle');
+  const panelText = document.getElementById('panelText');
+  const panelBtns = document.getElementById('panelBtns');
+  const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+
+  let noClicks = 0;
+  let ended = false;
+  let inLastChance = false;
+
+  const noLines = [
+    "That ‘No’ tried to land… and slipped on a banana peel 🍌",
+    "The button said “zoomies” and sprinted away 🐾",
+    "Your click got gently booped into the void ✨",
+    "The ‘No’ button is doing cardio for its mental health 🏃‍♀️",
+    "It’s practicing parkour. You can’t blame it 🧗",
+    "Cupid just tackled your ‘No’ (respectfully) 🏹",
+    "The button filed an appeal with a tiny hamster judge 🐹⚖️",
+    "It whispered: “I’m shy around romance” 🥺",
+    "That click bounced off my heart like a trampoline 💗",
+    "The button is hiding behind emotional support snacks 🍫",
+    "It made eye contact… then chose chaos 😅",
+    "It’s in airplane mode. No signals. ✈️",
+    "The button saw a cute date and got stage fright 🎭",
+    "It said: “not today, I’m just a baby” 👶",
+    "Your finger is powerful. The button is intimidated 💅",
+    "I asked it to hold still— it said “absolutely not” 🙈",
+    "It escaped like a bar of soap in the shower 🧼",
+    "It’s doing interpretive dance now. That’s new 💃",
+    "Plot twist: the ‘No’ button is a professional dodger 🥇",
+    "It did a little hop… and a big nope 🐇",
+    "Your click was intercepted by a polite panda 🐼",
+    "It’s giving ‘I’m nervous but thriving’ energy 😳",
+    "Okay… I hear you. Like, actually. 👂",
+    "I’m going to slow down and check in for real."
+  ];
+
+  // ==========================================================
+  // 25 reactions:
+  // - On PAGE LOAD: no image (buddy card)
+  // - On FIRST NO CLICK: show picture (reaction #1)
+  // - On #25 / end: no image (final card)
+  // ==========================================================
+  const REACTIONS = [
+    { title: "Cat • OH?",                  file: "Surprised cat.jpg" }, // #1 first NO click
+    { title: "Cat • WAIT WHAT",            file: "Surprised cat at night.jpg" },
+    { title: "Cat • NO WAY",               file: "Surprised young cat.JPG" },
+    { title: "Cat • EXCUSE ME?",           file: "Alerted Cat (117884479).jpeg" },
+    { title: "Cat • SAY SIKE",             file: "Alerted Cat (117884479) (2015; cropped 2025).jpeg" },
+    { title: "Cat • FALSE ALARM?!",        file: "False alarm -a.jpg" },
+    { title: "Cat • WHO SAID THAT",        file: "Night cat (30394375124).jpg" },
+    { title: "Cat • HELLO??",              file: "Hello ! (12935578234).jpg" },
+    { title: "Cat • DID YOU JUST—",        file: "What's so funny ? (20100220978).jpg" },
+    { title: "Cat • I’M LISTENING",        file: "Am I Boring You?.jpg" },
+
+    { title: "Dog • OMG (YAWN EDITION)",   file: "A dog yawning.JPG" },
+    { title: "Dog • I BEG YOUR PARDON",    file: "A rottweiler yawning.jpg" },
+    { title: "Dog • THE AUDACITY",         file: "Akubi dog.JPG" },
+    { title: "Dog • HUH?!",                file: "Beagle yawning.jpg" },
+    { title: "Dog • YOU SURE?!",           file: "Beagle yawning 2.jpg" },
+    { title: "Dog • *GASP*",               file: "Black yawning dog.jpg" },
+    { title: "Dog • YOU DID NOT",          file: "Dalmatian liver yawn.jpg" },
+    { title: "Dog • BRO WHAT",             file: "Chihuahua Wassup?.jpg" },
+    { title: "Dog • THIS IS WILD",         file: "Oreo In Mid Yawn.JPG" },
+    { title: "Dog • I CAN’T BELIEVE IT",   file: "Picography-dog-yawning-1.jpg" },
+
+    { title: "Dog • I’M SHOOK",            file: "Pinscher yawing.jpg" },
+    { title: "Dog • ABSOLUTELY NOT",       file: "Bulldog.jpg" },
+    { title: "Dog • *DRAMATIC INHALE*",    file: "DogYawn sm wb.jpg" },
+    { title: "Dog • OH MY GOD",            file: "2014 Westminster Kennel Club Dog Show (12451553303).jpg" },
+    { title: "Buddy • Concerned",          file: null } // #25 no image
+  ];
+
+  const MEME_CAPTIONS = [
+    { top:"OH MY GOD",            bottom:"DID YOU JUST CLICK NO" },
+    { top:"WAIT",                 bottom:"WHAT WAS THAT" },
+    { top:"HUH??",                bottom:"I'M PROCESSING" },
+    { top:"EXCUSE ME",            bottom:"THE AUDACITY??" },
+    { top:"NO WAY",               bottom:"TRY AGAIN" },
+    { top:"FALSE ALARM",          bottom:"PANIC OVER" },
+    { top:"WHO SAID THAT",        bottom:"SHOW YOURSELF" },
+    { top:"HELLO??",              bottom:"I HEARD THAT" },
+    { top:"DID YOU JUST—",        bottom:"NAH" },
+    { top:"I’M LISTENING",        bottom:"BUT WOW" },
+
+    { top:"OH MY GOD",            bottom:"THE DRAMA" },
+    { top:"I BEG YOUR PARDON",    bottom:"RESPECTFULLY??" },
+    { top:"THE AUDACITY",         bottom:"IS CRAZY" },
+    { top:"HUH?!",                bottom:"EXPLAIN" },
+    { top:"YOU SURE?",            bottom:"LIKE… SURE SURE?" },
+    { top:"*GASP*",               bottom:"I’M SHOOK" },
+    { top:"YOU DID NOT",          bottom:"PLEASE" },
+    { top:"BRO WHAT",             bottom:"NO WAY" },
+    { top:"THIS IS WILD",         bottom:"I CAN’T" },
+    { top:"I CAN’T BELIEVE IT",   bottom:"I’M LAUGHING" },
+
+    { top:"I’M SHOOK",            bottom:"HELP" },
+    { top:"ABSOLUTELY NOT",       bottom:"(RESPECTFULLY)" },
+    { top:"*DRAMATIC INHALE*",    bottom:"WOW" },
+    { top:"OH MY GOD",            bottom:"OKAY OKAY" },
+    { top:"",                     bottom:"" } // #25 ignored (no image)
+  ];
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function renderLoadBuddyCard(){
+    animalTitle.textContent = "Mood Buddy";
+    animalWrap.innerHTML = `
+      <div class="noImageCard" role="img" aria-label="No image">
+        <div class="big">💞</div>
+        <div>Click “No” for a reaction.</div>
+        <div class="sub">First one is a classic. 😳</div>
+      </div>
+    `;
+  }
+
+  function renderFinalBuddyCard(){
+    animalTitle.textContent = "Buddy • Concerned";
+    animalWrap.innerHTML = `
+      <div class="noImageCard" role="img" aria-label="No image">
+        <div class="big">🤍</div>
+        <div>Okay. I hear you.</div>
+        <div class="sub">No tricks. No pressure. Just respect.</div>
+      </div>
+    `;
+  }
+
+  function setReactionByNoClicks(n){
+    // n = number of NO clicks (1..25)
+    const idx = Math.max(0, Math.min(REACTIONS.length - 1, (n|0) - 1));
+    const r = REACTIONS[idx];
+
+    if (idx === 24 || !r.file){
+      renderFinalBuddyCard();
+      return;
+    }
+
+    const cap = MEME_CAPTIONS[idx] || { top:"OH MY GOD", bottom:"NO WAY" };
+    animalTitle.textContent = r.title;
+
+    const base = "https://commons.wikimedia.org/wiki/Special:FilePath/";
+    const url = base + encodeURIComponent(r.file);
+
+    animalWrap.innerHTML = `
+      <div class="animalMedia">
+        <div class="memeTop">${escapeHtml(cap.top)}</div>
+        <div class="memeBottom">${escapeHtml(cap.bottom)}</div>
+        <img alt="${escapeHtml(r.title)}"
+             loading="eager"
+             decoding="async"
+             referrerpolicy="no-referrer"
+             src="${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}" />
+      </div>
+    `;
+
+    const img = animalWrap.querySelector("img");
+    img.onerror = () => {
+      animalTitle.textContent = "Mood Buddy (couldn’t load image)";
+      animalWrap.innerHTML =
+        "<div class='noImageCard'><div class='big'>🫠</div><div>That one didn’t load.</div><div class='sub'>Still… I’m shocked. Truly.</div></div>";
+    };
+  }
+
+  // On page load: show NO image buddy card
+  renderLoadBuddyCard();
+
+  requestAnimationFrame(() => placeNoSafely());
+  window.addEventListener('resize', () => { if (!ended && !inLastChance) placeNoSafely(); });
+
+  noBtn.addEventListener('click', (e) => {
+    if (ended) return;
+    if (inLastChance) { endWithNo(); return; }
+
+    noClicks++;
+    counter.textContent = `No clicks: ${noClicks}`;
+
+    const idx = Math.min(noClicks, 24) - 1;
+    messageBox.classList.add('softer');
+    messageBox.textContent = noLines[idx] || "…";
+
+    setReactionByNoClicks(Math.min(noClicks, 25));
+    animalHint.textContent = "Okay okay… I’m being silly. I’m also listening. 🤍";
+
+    placeNoSafely();
+    spawnHearts(e.clientX, e.clientY, 10);
+
+    if (noClicks >= LAST_CHANCE_AT) showLastChance();
+  });
+
+  yesBtn.addEventListener('click', () => {
+    if (ended) return;
+    if (inLastChance) { overlay.classList.remove('show'); inLastChance = false; }
+    confirmYes();
+  });
+
+  closeOverlayBtn.addEventListener('click', () => overlay.classList.remove('show'));
+  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') overlay.classList.remove('show'); });
+
+  function confirmYes(){
+    showOverlay("Reservation Status","Reservation Pending… ⏳","Yay 💕 I’ll send you the plan soon — I’m making reservations.",[
+      { text:"Close", className:"soft", onClick: () => overlay.classList.remove('show') }
+    ]);
+    if (YES_PIXEL_URL) { const img=new Image(); img.src=YES_PIXEL_URL+(YES_PIXEL_URL.includes('?')?'&':'?')+'t='+Date.now(); }
+    const subject = encodeURIComponent("Valentine Page: YES clicked 💖");
+    const body = encodeURIComponent("She clicked YES on the Valentine ask page.\n\nReservation status shown: Pending.\n\n— auto-filled");
+    setTimeout(()=>{ window.location.href=`mailto:${YOUR_EMAIL}?subject=${subject}&body=${body}`; },250);
+  }
+
+  function showLastChance(){
+    inLastChance = true;
+    // Show #25 no image
+    renderFinalBuddyCard();
+    animalHint.textContent = "This isn’t a trick anymore. Your feelings matter.";
+
+    showOverlay("One last thing","Are you sure? 🤍",
+      "I’ve been playful because I like you.\nBut if you’re not into it, I want to respect that completely.\n\nIf you say no again, I’ll stop and I won’t ask again.",
+      [
+        { text:"Yes 💖 (let’s do it)", className:"primary", onClick: () => { overlay.classList.remove('show'); inLastChance=false; confirmYes(); } },
+        { text:"No. I’m sure.", className:"secondary", onClick: () => { overlay.classList.remove('show'); endWithNo(); } }
+      ]
+    );
+    placeNoSafely();
+  }
+
+  function endWithNo(){
+    ended = true;
+    inLastChance = false;
+    yesBtn.style.display = "none";
+    noBtn.classList.add('disabled');
+    noBtn.textContent = "No (final) 😢";
+    noBtn.style.left = "50%";
+    noBtn.style.top = "74%";
+    noBtn.style.transform = "translate(-50%,-50%)";
+
+    messageBox.innerHTML = `
+      <div class="tearWrap">
+        <div style="font-weight:950;color:var(--sad);">I understand.</div>
+        <div style="font-weight:900;color:#7a4b5f;font-size:13px;max-width:520px;">
+          Thank you for being honest. I’ll respect your boundary. 🤍
+        </div>
+        <div class="tear" aria-hidden="true"></div>
+      </div>
+    `;
+
+    renderFinalBuddyCard();
+    animalHint.textContent = "No means no. Always. 🤍";
+
+    showOverlay("All good","Ended 🤍","No worries at all. I understand — and I’ll respect it completely.",[
+      { text:"Close", className:"soft", onClick: () => overlay.classList.remove('show') }
+    ]);
+
+    if (FINAL_NO_PIXEL_URL) { const img=new Image(); img.src=FINAL_NO_PIXEL_URL+(FINAL_NO_PIXEL_URL.includes('?')?'&':'?')+'t='+Date.now(); }
+
+    const subject = encodeURIComponent("Valentine Page: FINAL NO clicked 🤍");
+    const body = encodeURIComponent("She clicked NO on the final confirmation (last chance) screen.\n\nOutcome: Ended with 'I understand'.\n\n— auto-filled");
+    setTimeout(()=>{ window.location.href=`mailto:${YOUR_EMAIL}?subject=${subject}&body=${body}`; },250);
+  }
+
+  function showOverlay(tag,title,text,buttons){
+    panelTag.textContent=tag; panelTitle.textContent=title; panelText.textContent=text;
+    panelBtns.innerHTML="";
+    buttons.forEach(b=>{
+      const btn=document.createElement('button');
+      btn.textContent=b.text; btn.className=b.className||"soft";
+      btn.addEventListener('click', b.onClick);
+      panelBtns.appendChild(btn);
+    });
+    overlay.classList.add('show');
+  }
+
+  function placeNoSafely(){
+    const stageRect=stage.getBoundingClientRect();
+    const yesRect=yesBtn.getBoundingClientRect();
+    const noRect=noBtn.getBoundingClientRect();
+    const pad=12, avoidPad=22;
+
+    const maxX=stageRect.width-noRect.width-pad;
+    const maxY=stageRect.height-noRect.height-pad;
+    const minX=pad, minY=pad;
+
+    const yesLocal=rectToLocal(yesRect, stageRect);
+    const avoid={x:yesLocal.x-avoidPad,y:yesLocal.y-avoidPad,w:yesLocal.w+avoidPad*2,h:yesLocal.h+avoidPad*2};
+
+    let x=minX, y=minY;
+    for(let i=0;i<90;i++){
+      const rx=randInt(minX, Math.max(minX,maxX));
+      const ry=randInt(minY, Math.max(minY,maxY));
+      const cand={x:rx,y:ry,w:noRect.width,h:noRect.height};
+      if(!rectIntersects(cand, avoid)){ x=rx; y=ry; break; }
+    }
+    noBtn.style.left=x+"px"; noBtn.style.top=y+"px"; noBtn.style.transform="translate(0,0)";
+  }
+  function rectToLocal(r,c){ return {x:r.left-c.left,y:r.top-c.top,w:r.width,h:r.height}; }
+  function rectIntersects(a,b){ return !(a.x+a.w<b.x || a.x>b.x+b.w || a.y+a.h<b.y || a.y>b.y+b.h); }
+  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  function spawnHearts(clientX, clientY, n=10){
+    const cr=card.getBoundingClientRect();
+    const cx=(clientX||(cr.left+cr.width/2))-cr.left;
+    const cy=(clientY||(cr.top+cr.height/2))-cr.top;
+    for(let i=0;i<n;i++){
+      const h=document.createElement('div');
+      h.className='heart';
+      h.style.left=(cx+(Math.random()*70-35)-9)+'px';
+      h.style.top=(cy+(Math.random()*50-25)-9)+'px';
+      card.appendChild(h);
+      setTimeout(()=>h.remove(),1200);
+    }
+  }
+
+  // =======================
+  // Intro typewriter sequence
+  // - 100% slow down overall (54ms per char)
+  // - pauses between pages = 3 seconds
+  // - add a 5 second countdown at the end
+  // =======================
+  const intro = document.getElementById('intro');
+  const introTextEl = document.getElementById('introText');
+  const introSkipBtn = document.getElementById('introSkipBtn');
+  const introFooter = document.getElementById('introFooter');
+
+  const INTRO_PAGES = [
+    "Dear Lena,\n\n",
+    "I know life is interesting and there is good, bad, hard, easy, scary, safe, anxious, excited — and many other feelings I probably can't think of right now.\n\n",
+    "Working on baby steps with no expectations and want to make sure I do give you your space and boundaries.\n\nHowever, one thing I never want to do again, is leave things unsaid..."
+  ];
+
+  let introCancelled = false;
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  async function runIntro(){
+    introTextEl.textContent = "";
+    introFooter.textContent = "Music plays while this loads — you can skip anytime.";
+    const caret = document.createElement("span");
+    caret.className = "caret";
+    caret.textContent = "▍";
+    introTextEl.appendChild(caret);
+
+    function appendChar(ch){
+      caret.remove();
+      introTextEl.textContent += ch;
+      introTextEl.appendChild(caret);
+    }
+
+    async function typeWithCaret(t, speed=54){
+      for (let i=0;i<t.length;i++){
+        if (introCancelled) return;
+        appendChar(t[i]);
+        await sleep(speed);
+      }
+    }
+
+    for (let p=0;p<INTRO_PAGES.length;p++){
+      await typeWithCaret(INTRO_PAGES[p], 54);
+      if (introCancelled) return;
+      await sleep(3000);
+    }
+
+    if (introCancelled) return;
+    await sleep(500);
+    for (let s=5; s>=1; s--){
+      if (introCancelled) return;
+      introFooter.textContent = `Starting in ${s}…`;
+      await sleep(1000);
+    }
+    introFooter.textContent = "Go! 💖";
+    await sleep(250);
+
+    if (!introCancelled) hideIntro();
+  }
+
+  function hideIntro(){
+    intro.classList.add('hidden');
+    setTimeout(()=>{ intro.style.display = "none"; }, 420);
+  }
+
+  introSkipBtn.addEventListener('click', ()=>{
+    introCancelled = true;
+    hideIntro();
+  });
+
+  runIntro();
+
+  // =======================
+  // YouTube background music
+  // =======================
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  const volSlider = document.getElementById('volSlider');
+  const musicNote = document.getElementById('musicNote');
+
+  const musicCurtain = document.getElementById('musicCurtain');
+  const musicStartBtn = document.getElementById('musicStartBtn');
+  const musicLaterBtn = document.getElementById('musicLaterBtn');
+
+  const YT_VIDEO_ID = "fVeD9vWCpZ8";
+
+  let ytPlayer = null;
+  let ytReady = false;
+  let isPlaying = false;
+  let isMuted = false;
+
+  if (location.protocol === "file:") {
+    musicNote.textContent =
+      "If you opened this as file://, YouTube playback is often blocked. Best: run a tiny local server (example: python3 -m http.server) and open http://localhost:8000/";
+  } else {
+    musicNote.textContent =
+      "Autoplay with sound is often blocked by browsers. I’ll try anyway — if it’s blocked, you’ll see a one-tap “Start music” button.";
+  }
+
+  (function loadYT(){
+    const s=document.createElement('script');
+    s.src="https://www.youtube.com/iframe_api";
+    document.head.appendChild(s);
+  })();
+
+  window.onYouTubeIframeAPIReady = function(){
+    ytPlayer = new YT.Player('ytPlayer', {
+      width: 360,
+      height: 240,
+      videoId: YT_VIDEO_ID,
+      playerVars: {
+        autoplay: 1,
+        controls: 0,
+        disablekb: 1,
+        playsinline: 1,
+        rel: 0,
+        modestbranding: 1,
+        enablejsapi: 1,
+        origin: (location.protocol === "file:" ? undefined : location.origin)
+      },
+      events: {
+        onReady: () => {
+          ytReady = true;
+          try { ytPlayer.setVolume(parseInt(volSlider.value,10)); } catch {}
+          try { ytPlayer.unMute(); isMuted = false; } catch {}
+          tryPlayAutoplay();
+          setMuteUI(isMuted);
+          setPlayUI(false);
+        },
+        onStateChange: (e) => {
+          if (e.data === YT.PlayerState.PLAYING) { isPlaying = true; setPlayUI(true); hideCurtain(); }
+          if (e.data === YT.PlayerState.PAUSED)  { isPlaying = false; setPlayUI(false); }
+          if (e.data === YT.PlayerState.ENDED)   { isPlaying = false; setPlayUI(false); }
+        },
+        onError: () => {
+          showCurtain();
+          playPauseBtn.textContent = "▶ Play";
+        }
+      }
+    });
+  };
+
+  function tryPlayAutoplay(){
+    if (!ytReady || !ytPlayer) return;
+    ytPlayer.playVideo();
+    setTimeout(() => {
+      let state = -999;
+      try { state = ytPlayer.getPlayerState(); } catch {}
+      if (state !== YT.PlayerState.PLAYING) showCurtain();
+    }, 650);
+  }
+
+  function showCurtain(){ musicCurtain.classList.add('show'); }
+  function hideCurtain(){ musicCurtain.classList.remove('show'); }
+
+  musicStartBtn.addEventListener('click', () => {
+    hideCurtain();
+    if (!ytReady || !ytPlayer) return;
+    try { ytPlayer.unMute(); isMuted = false; } catch {}
+    try { ytPlayer.setVolume(parseInt(volSlider.value,10)); } catch {}
+    ytPlayer.playVideo();
+    setMuteUI(isMuted);
+  });
+  musicLaterBtn.addEventListener('click', hideCurtain);
+
+  playPauseBtn.addEventListener('click', () => {
+    if (!ytReady || !ytPlayer) return;
+    if (!isPlaying){
+      ytPlayer.playVideo();
+      try { ytPlayer.unMute(); isMuted = false; } catch {}
+      setMuteUI(isMuted);
+    } else {
+      ytPlayer.pauseVideo();
+    }
+  });
+
+  muteBtn.addEventListener('click', () => {
+    if (!ytReady || !ytPlayer) { setMuteUI(!isMuted); return; }
+    if (isMuted){
+      ytPlayer.unMute();
+      isMuted = false;
+      setMuteUI(false);
+    } else {
+      ytPlayer.mute();
+      isMuted = true;
+      setMuteUI(true);
+    }
+  });
+
+  volSlider.addEventListener('input', () => {
+    if (!ytReady || !ytPlayer) return;
+    ytPlayer.setVolume(parseInt(volSlider.value,10));
+  });
+
+  function setPlayUI(playing){
+    isPlaying = !!playing;
+    playPauseBtn.textContent = playing ? "⏸ Pause" : "▶ Play";
+    playPauseBtn.classList.toggle('on', playing);
+  }
+  function setMuteUI(muted){
+    isMuted = !!muted;
+    muteBtn.textContent = muted ? "🔇 Muted" : "🔊 Sound";
+    muteBtn.classList.toggle('on', !muted);
+  }
+</script>
+</body>
+</html>
+
+
