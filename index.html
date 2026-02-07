@@ -323,7 +323,7 @@
   // =======================
   // Email + click behavior
   // =======================
-  const YOUR_EMAIL = "cristeatv@gmail.comE";
+  const YOUR_EMAIL = "EMAIL_HEREE";
   const YES_PIXEL_URL = "";
   const FINAL_NO_PIXEL_URL = "";
   const LAST_CHANCE_AT = 25;
@@ -546,13 +546,10 @@
   document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') overlay.classList.remove('show'); });
 
   function confirmYes(){
-    showOverlay("Reservation Status","Reservation Pending… ⏳","Yay 💕 I’ll send you the plan soon — I’m making reservations.",[
+    showOverlay("Reservation Status","Reservation Pending… ⏳","Yay 💕 I’ll send you the plan soon — I’m making reservations.\nPS, Send picture with your asnwer to (720) 296-6854",[
       { text:"Close", className:"soft", onClick: () => overlay.classList.remove('show') }
     ]);
     if (YES_PIXEL_URL) { const img=new Image(); img.src=YES_PIXEL_URL+(YES_PIXEL_URL.includes('?')?'&':'?')+'t='+Date.now(); }
-    const subject = encodeURIComponent("Valentine Page: YES clicked 💖");
-    const body = encodeURIComponent("She clicked YES on the Valentine ask page.\n\nReservation status shown: Pending.\n\n— auto-filled");
-    setTimeout(()=>{ window.location.href=`mailto:${YOUR_EMAIL}?subject=${subject}&body=${body}`; },250);
   }
 
   function showLastChance(){
@@ -594,7 +591,7 @@
     renderFinalBuddyCard();
     animalHint.textContent = "No means no. Always. 🤍";
 
-    showOverlay("All good","Ended 🤍","No worries at all. I understand — and I’ll respect it completely.",[
+    showOverlay("All good","Ended 🤍","No worries at all. I understand — and I’ll respect it completely.\nPS, Send picture with your asnwer to (720) 296-6854",[
       { text:"Close", className:"soft", onClick: () => overlay.classList.remove('show') }
     ]);
 
@@ -602,7 +599,6 @@
 
     const subject = encodeURIComponent("Valentine Page: FINAL NO clicked 🤍");
     const body = encodeURIComponent("She clicked NO on the final confirmation (last chance) screen.\n\nOutcome: Ended with 'I understand'.\n\n— auto-filled");
-    setTimeout(()=>{ window.location.href=`mailto:${YOUR_EMAIL}?subject=${subject}&body=${body}`; },250);
   }
 
   function showOverlay(tag,title,text,buttons){
